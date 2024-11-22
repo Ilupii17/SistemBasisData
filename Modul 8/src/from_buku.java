@@ -185,9 +185,6 @@ public class from_buku extends javax.swing.JFrame {
     public from_buku() {
         initComponents();
         tampil_buku();
-        //simpan_data();
-        //hapus_data();
-        //edit_data();
     }
 
     /**
@@ -372,9 +369,6 @@ public class from_buku extends javax.swing.JFrame {
 
     private void buton_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buton_hapusActionPerformed
         // TODO add your handling code here:
-        if (!validateInput()) {
-            return;  // Menghentikan jika input tidak valid
-        }
         hapus_data();
     }//GEN-LAST:event_buton_hapusActionPerformed
 
