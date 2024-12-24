@@ -1,0 +1,326 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package project_sbd;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author Hp
+ */
+public class tambah_film extends javax.swing.JFrame {
+
+    /**
+     * Creates new form tambah_film
+     */
+    
+    private void clearForm() {
+    txtJudulFilm.setText("");
+    txtHarga.setText("");
+    tableFilm.clearSelection();
+}
+
+    private void loadDataFilm() {
+    try (Connection connection = koneksi.getConnection()) {
+        String query = "SELECT * FROM films";
+        PreparedStatement statement = connection.prepareStatement(query);
+        ResultSet resultSet = statement.executeQuery();
+
+        DefaultTableModel model = (DefaultTableModel) tableFilm.getModel();
+        model.setRowCount(0);
+
+        while (resultSet.next()) {
+            Object[] row = {
+                resultSet.getString("id"),
+                resultSet.getString("film_name"),
+                resultSet.getString("price")
+            };
+            model.addRow(row);
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat memuat data!");
+    }
+}
+
+    private void simpanFilm() {
+    String judulFilm = txtJudulFilm.getText();
+    String harga = txtHarga.getText();
+
+    if (judulFilm.isEmpty() || harga.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
+        return;
+    }
+
+    try (Connection connection = koneksi.getConnection()) {
+        String query = "INSERT INTO films (film_name, price) VALUES (?, ?)";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, judulFilm);
+        statement.setString(2, harga);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            JOptionPane.showMessageDialog(this, "Film berhasil disimpan!");
+            loadDataFilm();
+            clearForm();
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data!");
+    }
+}
+
+    private void hapusFilm() {
+    int selectedRow = tableFilm.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih film yang ingin dihapus!");
+        return;
+    }
+
+    String idFilm = tableFilm.getValueAt(selectedRow, 0).toString();
+
+    int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin menghapus film ini?");
+    if (confirm == JOptionPane.YES_OPTION) {
+        try (Connection connection = koneksi.getConnection()) {
+            String query = "DELETE FROM films WHERE id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, idFilm);
+
+            int rowsDeleted = statement.executeUpdate();
+            if (rowsDeleted > 0) {
+                JOptionPane.showMessageDialog(this, "Film berhasil dihapus!");
+                loadDataFilm();
+                clearForm();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menghapus data!");
+        }
+    }
+}
+    
+    private void editFilm() {
+    int selectedRow = tableFilm.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih film yang ingin diedit!");
+        return;
+    }
+
+    String idFilm = tableFilm.getValueAt(selectedRow, 0).toString();
+    String judulFilm = txtJudulFilm.getText();
+    String harga = txtHarga.getText();
+
+    if (judulFilm.isEmpty() || harga.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
+        return;
+    }
+
+    try (Connection connection = koneksi.getConnection()) {
+        String query = "UPDATE films SET film_name = ?, price = ? WHERE id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, judulFilm);
+        statement.setString(2, harga);
+        statement.setString(3, idFilm);
+
+        int rowsUpdated = statement.executeUpdate();
+        if (rowsUpdated > 0) {
+            JOptionPane.showMessageDialog(this, "Film berhasil diperbarui!");
+            loadDataFilm();
+            clearForm();
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mengedit data!");
+    }
+}
+
+    
+    public tambah_film() {
+        initComponents();
+        loadDataFilm();
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel3 = new javax.swing.JLabel();
+        tombolHapus = new javax.swing.JButton();
+        tombolEdit = new javax.swing.JButton();
+        tombolSimpan = new javax.swing.JButton();
+        txtHarga = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txtJudulFilm = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tableFilm = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+
+        jLabel3.setText("jLabel3");
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tombolHapus.setText("Hapus");
+        tombolHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tombolHapusActionPerformed(evt);
+            }
+        });
+        getContentPane().add(tombolHapus, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 140, -1, -1));
+
+        tombolEdit.setText("Edit");
+        tombolEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tombolEditActionPerformed(evt);
+            }
+        });
+        getContentPane().add(tombolEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 140, 70, -1));
+
+        tombolSimpan.setText("Simpan");
+        tombolSimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tombolSimpanActionPerformed(evt);
+            }
+        });
+        getContentPane().add(tombolSimpan, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 140, -1, -1));
+
+        txtHarga.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtHargaActionPerformed(evt);
+            }
+        });
+        getContentPane().add(txtHarga, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 90, 150, -1));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Tambah Film");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 10, 90, -1));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Harga");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 90, -1));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Judul Film");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 50, 90, -1));
+
+        txtJudulFilm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtJudulFilmActionPerformed(evt);
+            }
+        });
+        getContentPane().add(txtJudulFilm, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 50, 150, -1));
+
+        tableFilm.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "id_film", "Judul Film", "harga"
+            }
+        ));
+        jScrollPane1.setViewportView(tableFilm);
+
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 720, 220));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon("C:\\Users\\Hp\\Downloads\\loginsuuuu.jpg")); // NOI18N
+        jLabel1.setText("jLabel1");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 720, -1));
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void txtHargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtHargaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtHargaActionPerformed
+
+    private void txtJudulFilmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtJudulFilmActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_txtJudulFilmActionPerformed
+
+    private void tombolEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tombolEditActionPerformed
+        // TODO add your handling code here:
+        editFilm();
+    }//GEN-LAST:event_tombolEditActionPerformed
+
+    private void tombolSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tombolSimpanActionPerformed
+        // TODO add your handling code here:
+        simpanFilm();
+    }//GEN-LAST:event_tombolSimpanActionPerformed
+
+    private void tombolHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tombolHapusActionPerformed
+        // TODO add your handling code here:
+        hapusFilm();
+    }//GEN-LAST:event_tombolHapusActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(tambah_film.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(tambah_film.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(tambah_film.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(tambah_film.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new tambah_film().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tableFilm;
+    private javax.swing.JButton tombolEdit;
+    private javax.swing.JButton tombolHapus;
+    private javax.swing.JButton tombolSimpan;
+    private javax.swing.JTextField txtHarga;
+    private javax.swing.JTextField txtJudulFilm;
+    // End of variables declaration//GEN-END:variables
+}
